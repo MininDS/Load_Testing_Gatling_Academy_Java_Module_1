@@ -132,17 +132,47 @@ public class MyComputerSimulation extends Simulation {
             .exec(searchForComputer, browse);
 
 
-    //Started MyComputerSimulation load testing with needed loading model
-    {
-        setUp(
-                admins.injectOpen(atOnceUsers(1)),
 
-                users.injectOpen(
-                        nothingFor(5),
-                        atOnceUsers(1),
-                        rampUsers(5).during(10),
-                        constantUsersPerSec(2).during(20)
-                        ))
-                .protocols(httpProtocol);
-    }
+    //Started MyComputerSimulation load testing with needed loading model:
+
+
+        //***Basic setUp for script-debugging - Open model with 1 admin and 1 user, parallel executing of scenarios
+        //{
+            //setUp(
+                //*Executes admins-scenarios parallel with only 1 user injected in the system (OpenModel)
+                //admins.injectOpen(atOnceUsers(1)),
+
+                //*Executes users-scenarios parallel with only 1 user injected in the system (OpenModel)
+                //users.injectOpen(atOnceUsers(1))
+            //)
+
+            //*Use http-protocol during simulation
+            //.protocols(httpProtocol);
+        //}
+
+
+        //***Open model simulation with 1 admin and several user, parallel executing of scenarios - Users will wait 5 sec before starting
+        {
+            setUp(
+                    //*Executes admins-scenarios parallel with only 1 user injected in the system (OpenModel)
+                    admins.injectOpen(atOnceUsers(1)),
+
+                    //*Executes users-scenarios parallel with different count of users at timing injected in the system (OpenModel)
+                    users.injectOpen(
+                            //Do not load the system for 5 seconds after scenario started
+                            nothingFor(5),
+
+                            //Inject only 1 user at time when scenario starts
+                            atOnceUsers(1),
+
+                            //Increase users from 0 to 5 step by step on each interval, then hold 5 users on 10 seconds period, then decrease them step by step
+                            rampUsers(5).during(10),
+
+                            //Sequentially injects 2 users per second on 20 seconds period (0-2-4-...-40users) - on 20 seconds, then sequentially decrease (40-38-...-2-0)
+                            constantUsersPerSec(2).during(20)
+                            ))
+
+            //*Use http-protocol on simulation
+            .protocols(httpProtocol);
+        }
 }
