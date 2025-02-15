@@ -132,7 +132,7 @@ public class MyComputerSimulation extends Simulation {
             .exec(searchForComputer, browse);
 
 
-
+    //Started MyComputerSimulation load testing with needed loading model
     {
         setUp(
                 admins.injectOpen(atOnceUsers(1)),
